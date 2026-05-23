@@ -86,4 +86,48 @@ export class SolicitudController implements SolicitudService {
       return res.status(500).json({ ok: false, error_message: "Error al eliminar solicitud" });
     }
   }
+
+  async getPendientesPorPais(req: Request, res: Response): Promise<any> {
+    try {
+      // Superadmin obtiene agregación por país
+      if (req.user && req.user.rol === "superadmin") {
+        const aggregation = await SolicitudModel.aggregate([
+          { $match: { estado: "pendiente" } },
+          { $group: { _id: "$pais", total: { $sum: 1 } } },
+          { $project: { pais: "$_id", total: 1, _id: 0 } },
+        ]);
+        return res.status(200).json({ ok: true, pendientes_por_pais: aggregation });
+      }
+
+      // Usuarios con país asignado obtienen solo su conteo
+      const pais = req.user?.pais;
+      if (!pais) return res.status(400).json({ ok: false, error_message: "El usuario no tiene país asignado" });
+
+      const total = await SolicitudModel.countDocuments({ estado: "pendiente", pais });
+      return res.status(200).json({ ok: true, pais, total });
+    } catch (error) {
+      console.error("Error getting pendientes por pais:", error);
+      return res.status(500).json({ ok: false, error_message: "Error al obtener solicitudes pendientes por país" });
+    }
+  }
+
+  async getTotal(req: Request, res: Response): Promise<any> {
+    try {
+      // Superadmin obtiene total global
+      if (req.user && req.user.rol === "superadmin") {
+        const total = await SolicitudModel.countDocuments({});
+        return res.status(200).json({ ok: true, total });
+      }
+
+      // Para otros, contar solo el país asignado
+      const pais = req.user?.pais;
+      if (!pais) return res.status(400).json({ ok: false, error_message: "El usuario no tiene país asignado" });
+
+      const total = await SolicitudModel.countDocuments({ pais });
+      return res.status(200).json({ ok: true, pais, total });
+    } catch (error) {
+      console.error("Error getting total solicitudes:", error);
+      return res.status(500).json({ ok: false, error_message: "Error al obtener total de solicitudes" });
+    }
+  }
 }
