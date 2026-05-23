@@ -3,9 +3,9 @@ import { RowRecord } from "./misc/record";
 
 export interface Noticia {
   titulo: string;
-  resumen?: string;
-  contenido?: string;
-  autor?: string;
+  resumen: string;
+  contenido: string;
+  autor: string;
   imagen_url?: string;
   pais: string; // id del país o nombre según uso en la app
   estado?: "borrador" | "publicado";

@@ -3,7 +3,7 @@ import { RowRecord } from "./misc/record";
 
 export interface Testimonio {
   nombre: string;
-  foto_url?: string;
+  foto_url: string;
   testimonio: string;
   pais: string;
   instagram_url?: string;
