@@ -96,4 +96,21 @@ export class NoticiaController implements NoticiaService {
       return res.status(500).json({ ok: false, error_message: "Error al eliminar noticia" });
     }
   }
+
+  async getTotalPublicadas(req: Request, res: Response): Promise<any> {
+    try {
+      const filter: any = { estado: "publicado" };
+      
+      // Si el usuario no es superadmin, contar solo del su país
+      if (req.user && req.user.rol !== "superadmin") {
+        filter.pais = req.user.pais;
+      }
+
+      const total = await NoticiaModel.countDocuments(filter);
+      return res.status(200).json({ ok: true, total, pais: filter.pais ?? "todos" });
+    } catch (error) {
+      console.error("Error getting total publicadas:", error);
+      return res.status(500).json({ ok: false, error_message: "Error al obtener total de noticias publicadas" });
+    }
+  }
 }

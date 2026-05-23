@@ -86,4 +86,19 @@ export class TestimonioController implements TestimonioService {
       return res.status(500).json({ ok: false, error_message: "Error al eliminar testimonio" });
     }
   }
+
+  async getTotalPublicados(req: Request, res: Response): Promise<any> {
+    try {
+      const filter: any = { estado: "publicado" };
+      if (req.user && req.user.rol !== "superadmin") {
+        filter.pais = req.user.pais;
+      }
+
+      const total = await TestimonioModel.countDocuments(filter);
+      return res.status(200).json({ ok: true, total, pais: filter.pais ?? "todos" });
+    } catch (error) {
+      console.error("Error getting total testimonios publicados:", error);
+      return res.status(500).json({ ok: false, error_message: "Error al obtener total de testimonios publicados" });
+    }
+  }
 }

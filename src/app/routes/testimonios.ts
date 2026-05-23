@@ -5,6 +5,7 @@ import { verifyToken } from "../../middleware/auth";
 const router = Router();
 const controller = new TestimonioController();
 
+router.get("/stats/total-publicados", (req, res) => controller.getTotalPublicados(req, res));
 router.get("/", (req, res) => controller.getAll(req, res));
 router.get("/:id", (req, res) => controller.getById(req, res));
 router.post("/", verifyToken, (req, res) => controller.create(req, res));
