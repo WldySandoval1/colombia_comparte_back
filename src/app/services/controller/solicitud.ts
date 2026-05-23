@@ -86,4 +86,46 @@ export class SolicitudController implements SolicitudService {
       return res.status(500).json({ ok: false, error_message: "Error al eliminar solicitud" });
     }
   }
+
+  async getPendientes(req: Request, res: Response): Promise<any> {
+    try {
+      const filter: any = { estado: "pendiente" };
+      if (req.user && req.user.rol !== "superadmin") filter.pais = req.user.pais;
+      if (req.query.pais && req.user && req.user.rol === "superadmin") filter.pais = req.query.pais;
+
+      const items = await SolicitudModel.find(filter).sort({ fecha_creacion: -1 });
+      return res.status(200).json({ ok: true, solicitudes: items });
+    } catch (error) {
+      console.error("Error getting solicitudes pendientes:", error);
+      return res.status(500).json({ ok: false, error_message: "Error al obtener solicitudes pendientes" });
+    }
+  }
+
+  async getGestionadas(req: Request, res: Response): Promise<any> {
+    try {
+      const filter: any = { estado: "gestionada" };
+      if (req.user && req.user.rol !== "superadmin") filter.pais = req.user.pais;
+      if (req.query.pais && req.user && req.user.rol === "superadmin") filter.pais = req.query.pais;
+
+      const items = await SolicitudModel.find(filter).sort({ fecha_creacion: -1 });
+      return res.status(200).json({ ok: true, solicitudes: items });
+    } catch (error) {
+      console.error("Error getting solicitudes gestionadas:", error);
+      return res.status(500).json({ ok: false, error_message: "Error al obtener solicitudes gestionadas" });
+    }
+  }
+
+  async getRespondidas(req: Request, res: Response): Promise<any> {
+    try {
+      const filter: any = { estado: "respondida" };
+      if (req.user && req.user.rol !== "superadmin") filter.pais = req.user.pais;
+      if (req.query.pais && req.user && req.user.rol === "superadmin") filter.pais = req.query.pais;
+
+      const items = await SolicitudModel.find(filter).sort({ fecha_creacion: -1 });
+      return res.status(200).json({ ok: true, solicitudes: items });
+    } catch (error) {
+      console.error("Error getting solicitudes respondidas:", error);
+      return res.status(500).json({ ok: false, error_message: "Error al obtener solicitudes respondidas" });
+    }
+  }
 }

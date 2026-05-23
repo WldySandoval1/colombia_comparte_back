@@ -6,6 +6,9 @@ const router = Router();
 const controller = new SolicitudController();
 
 router.get("/", (req, res) => controller.getAll(req, res));
+router.get("/pendiente", verifyToken, (req, res) => controller.getPendientes(req, res));
+router.get("/gestionada", verifyToken, (req, res) => controller.getGestionadas(req, res));
+router.get("/respondida", verifyToken, (req, res) => controller.getRespondidas(req, res));
 router.get("/:id", (req, res) => controller.getById(req, res));
 router.post("/", verifyToken, (req, res) => controller.create(req, res));
 router.put("/:id", verifyToken, (req, res) => controller.update(req, res));
