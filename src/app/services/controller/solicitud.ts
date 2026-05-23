@@ -128,4 +128,44 @@ export class SolicitudController implements SolicitudService {
       return res.status(500).json({ ok: false, error_message: "Error al obtener solicitudes respondidas" });
     }
   }
+
+  async getColombia(req: Request, res: Response): Promise<any> {
+    try {
+      const filter: any = { pais: req.user && req.user.rol !== "superadmin" ? req.user.pais : "Colombia" };
+      if (req.user && req.user.rol !== "superadmin") filter.pais = req.user.pais;
+
+      const items = await SolicitudModel.find(filter).sort({ fecha_creacion: -1 });
+      return res.status(200).json({ ok: true, solicitudes: items });
+    } catch (error) {
+      console.error("Error getting solicitudes de Colombia:", error);
+      return res.status(500).json({ ok: false, error_message: "Error al obtener solicitudes de Colombia" });
+    }
+  }
+
+  async getEcuador(req: Request, res: Response): Promise<any> {
+    try {
+      const filter: any = { pais: req.user && req.user.rol !== "superadmin" ? req.user.pais : "Ecuador" };
+      if (req.user && req.user.rol !== "superadmin") filter.pais = req.user.pais;
+
+      const items = await SolicitudModel.find(filter).sort({ fecha_creacion: -1 });
+      return res.status(200).json({ ok: true, solicitudes: items });
+    } catch (error) {
+      console.error("Error getting solicitudes de Ecuador:", error);
+      return res.status(500).json({ ok: false, error_message: "Error al obtener solicitudes de Ecuador" });
+    }
+  }
+
+  async getChile(req: Request, res: Response): Promise<any> {
+    try {
+      const filter: any = { pais: req.user && req.user.rol !== "superadmin" ? req.user.pais : "Chile" };
+      if (req.user && req.user.rol !== "superadmin") filter.pais = req.user.pais;
+
+      const items = await SolicitudModel.find(filter).sort({ fecha_creacion: -1 });
+      return res.status(200).json({ ok: true, solicitudes: items });
+    } catch (error) {
+      console.error("Error getting solicitudes de Chile:", error);
+      return res.status(500).json({ ok: false, error_message: "Error al obtener solicitudes de Chile" });
+    }
+  }
 }
+
