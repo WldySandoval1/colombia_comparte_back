@@ -100,7 +100,42 @@ export class UserController implements UserService<UserResponse> {
       });
     }
   }
+  //Metodo para capturar los datos del usuario
+  async getMe(req: Request, res: Response): Promise<Response> {
+    try {
+      const userId = req.user?.id;
 
+      if (!userId) {
+        return res.status(401).json({
+          ok: false,
+          error_message: "Usuario no autenticado",
+        });
+      }
+
+      const user = await UserModel.findOne({
+        id: userId,
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          ok: false,
+          error_message: "Usuario no encontrado",
+        });
+      }
+
+      return res.status(200).json({
+        ok: true,
+        user,
+      });
+    } catch (error) {
+      console.error("error obteniendo usuario", error);
+
+      return res.status(500).json({
+        ok: false,
+        error_message: "Error obteniendo usuario",
+      });
+    }
+  }
   // getUserCredentials(req: Request, res: Response): Promise<Response<User>> {
   //     throw new Error("Method not implemented.");
   // }
