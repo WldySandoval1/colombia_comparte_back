@@ -26,9 +26,13 @@ export class NoticiaController implements NoticiaService {
       // Si el usuario no es superadmin, mostrar solo su país
       if (req.user && req.user.rol !== "superadmin") filter.pais = req.user.pais;
 
-      // Filtros opcionales por estado o país desde query
+      // Filtros opcionales por estado
       if (req.query.estado) filter.estado = req.query.estado;
-      if (req.query.pais) filter.pais = req.query.pais;
+
+      // Sólo permitir filtrar por país desde query si el usuario es superadmin
+      if (req.query.pais && req.user && req.user.rol === "superadmin") {
+        filter.pais = req.query.pais;
+      }
 
       const noticias = await NoticiaModel.find(filter).sort({ fecha_creacion: -1 });
       return res.status(200).json({ ok: true, noticias });
