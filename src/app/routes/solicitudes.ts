@@ -10,5 +10,7 @@ router.get("/:id", (req, res) => controller.getById(req, res));
 router.post("/", verifyToken, (req, res) => controller.create(req, res));
 router.put("/:id", verifyToken, (req, res) => controller.update(req, res));
 router.delete("/:id", verifyToken, (req, res) => controller.delete(req, res));
+router.get("/stats/total", verifyToken, (req, res) => controller.getTotal(req, res));
+router.get("/stats/pendientes-por-pais", verifyToken, (req, res) => controller.getPendientesPorPais(req, res));
 
 export default router;
