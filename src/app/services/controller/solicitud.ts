@@ -145,12 +145,10 @@ export class SolicitudController implements SolicitudService {
       return res.status(200).json({ ok: true, solicitudes: items });
     } catch (error) {
       console.error("Error getting solicitudes pendientes:", error);
-      return res
-        .status(500)
-        .json({
-          ok: false,
-          error_message: "Error al obtener solicitudes pendientes",
-        });
+      return res.status(500).json({
+        ok: false,
+        error_message: "Error al obtener solicitudes pendientes",
+      });
     }
   }
 
@@ -168,12 +166,10 @@ export class SolicitudController implements SolicitudService {
       return res.status(200).json({ ok: true, solicitudes: items });
     } catch (error) {
       console.error("Error getting solicitudes gestionadas:", error);
-      return res
-        .status(500)
-        .json({
-          ok: false,
-          error_message: "Error al obtener solicitudes gestionadas",
-        });
+      return res.status(500).json({
+        ok: false,
+        error_message: "Error al obtener solicitudes gestionadas",
+      });
     }
   }
 
@@ -191,12 +187,10 @@ export class SolicitudController implements SolicitudService {
       return res.status(200).json({ ok: true, solicitudes: items });
     } catch (error) {
       console.error("Error getting solicitudes respondidas:", error);
-      return res
-        .status(500)
-        .json({
-          ok: false,
-          error_message: "Error al obtener solicitudes respondidas",
-        });
+      return res.status(500).json({
+        ok: false,
+        error_message: "Error al obtener solicitudes respondidas",
+      });
     }
   }
 
@@ -209,18 +203,30 @@ export class SolicitudController implements SolicitudService {
           { $group: { _id: "$pais", total: { $sum: 1 } } },
           { $project: { pais: "$_id", total: 1, _id: 0 } },
         ]);
-        return res.status(200).json({ ok: true, pendientes_por_pais: aggregation });
+        return res
+          .status(200)
+          .json({ ok: true, pendientes_por_pais: aggregation });
       }
 
       // Usuarios con país asignado obtienen solo su conteo
       const pais = req.user?.pais;
-      if (!pais) return res.status(400).json({ ok: false, error_message: "El usuario no tiene país asignado" });
+      if (!pais)
+        return res.status(400).json({
+          ok: false,
+          error_message: "El usuario no tiene país asignado",
+        });
 
-      const total = await SolicitudModel.countDocuments({ estado: "pendiente", pais });
+      const total = await SolicitudModel.countDocuments({
+        estado: "pendiente",
+        pais,
+      });
       return res.status(200).json({ ok: true, pais, total });
     } catch (error) {
       console.error("Error getting pendientes por pais:", error);
-      return res.status(500).json({ ok: false, error_message: "Error al obtener solicitudes pendientes por país" });
+      return res.status(500).json({
+        ok: false,
+        error_message: "Error al obtener solicitudes pendientes por país",
+      });
     }
   }
 
@@ -234,13 +240,81 @@ export class SolicitudController implements SolicitudService {
 
       // Para otros, contar solo el país asignado
       const pais = req.user?.pais;
-      if (!pais) return res.status(400).json({ ok: false, error_message: "El usuario no tiene país asignado" });
+      if (!pais)
+        return res.status(400).json({
+          ok: false,
+          error_message: "El usuario no tiene país asignado",
+        });
 
       const total = await SolicitudModel.countDocuments({ pais });
       return res.status(200).json({ ok: true, pais, total });
     } catch (error) {
       console.error("Error getting total solicitudes:", error);
-      return res.status(500).json({ ok: false, error_message: "Error al obtener total de solicitudes" });
+      return res.status(500).json({
+        ok: false,
+        error_message: "Error al obtener total de solicitudes",
+      });
+    }
+  }
+
+  async getTotalSolicitudPais(req: Request, res: Response): Promise<any> {
+    try {
+      let filter: any = {};
+
+      //  Si viene un país en la query, usarlo
+      const paisQuery = req.query.pais as string;
+
+      if (paisQuery) {
+        filter.pais = paisQuery;
+      } else if (req.user && req.user.rol !== "superadmin") {
+        filter.pais = req.user.pais;
+      }
+
+      const total = await SolicitudModel.countDocuments(filter);
+
+      return res.status(200).json({
+        ok: true,
+        total,
+        pais: filter.pais ?? "todos",
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      return res.status(500).json({
+        ok: false,
+        error_message: "Error al obtener total de testimonios por país",
+      });
+    }
+  }
+  async getTotalSolicitudPaisPenientes(
+    req: Request,
+    res: Response,
+  ): Promise<any> {
+    try {
+      let filter: any = {};
+      filter.estado = "pendiente";
+
+      //  Si viene un país en la query, usarlo
+      const paisQuery = req.query.pais as string;
+
+      if (paisQuery) {
+        filter.pais = paisQuery;
+      } else if (req.user && req.user.rol !== "superadmin") {
+        filter.pais = req.user.pais;
+      }
+
+      const total = await SolicitudModel.countDocuments(filter);
+
+      return res.status(200).json({
+        ok: true,
+        total,
+        pais: filter.pais ?? "todos",
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      return res.status(500).json({
+        ok: false,
+        error_message: "Error al obtener total de testimonios por país",
+      });
     }
   }
 }

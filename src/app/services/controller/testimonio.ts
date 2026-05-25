@@ -156,7 +156,7 @@ export class TestimonioController implements TestimonioService {
     try {
       let filter: any = {};
 
-      // 📌 Si viene un país en la query, usarlo
+      //  Si viene un país en la query, usarlo
       const paisQuery = req.query.pais as string;
 
       if (paisQuery) {
@@ -177,6 +177,37 @@ export class TestimonioController implements TestimonioService {
       return res.status(500).json({
         ok: false,
         error_message: "Error al obtener total de testimonios por país",
+      });
+    }
+  }
+  async getTotalListTestimoniosPais(req: Request, res: Response): Promise<any> {
+    try {
+      let filter: any = {};
+
+      const paisQuery = req.query.pais as string;
+
+      if (paisQuery) {
+        filter.pais = paisQuery;
+      } else if (req.user && req.user.rol !== "superadmin") {
+        filter.pais = req.user.pais;
+      }
+
+      // Obtener todos los testimonios sin paginación
+      const testimonios = await TestimonioModel.find(filter).sort({
+        fecha_creacion: -1,
+      });
+
+      return res.status(200).json({
+        ok: true,
+        testimonios,
+        total: testimonios.length,
+        pais: filter.pais ?? "todos",
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      return res.status(500).json({
+        ok: false,
+        error_message: "Error al obtener testimonios por país",
       });
     }
   }
