@@ -32,5 +32,6 @@ router.get("/stats/total-publicados-pais", verifyToken, (req, res) =>
 router.get("/stats/total-pendientes-pais/pais", verifyToken, (req, res) =>
   controller.getTotalSolicitudPaisPenientes(req, res),
 );
+router.post("/public", (req, res) => controller.createPublic(req, res));
 
 export default router;

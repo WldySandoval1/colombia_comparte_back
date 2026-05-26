@@ -317,4 +317,43 @@ export class SolicitudController implements SolicitudService {
       });
     }
   }
+  async createPublic(req: Request, res: Response): Promise<any> {
+    try {
+      const { nombre, correo, telefono, finalidad, pais } = req.body;
+
+      // Validar campos requeridos
+      if (!nombre || !correo || !telefono || !finalidad || !pais) {
+        return res.status(400).json({
+          ok: false,
+          error_message: "Todos los campos son requeridos",
+        });
+      }
+
+      // Validar que el país sea válido
+      const paisesValidos = ["Chile", "Colombia", "Ecuador"];
+      if (!paisesValidos.includes(pais)) {
+        return res.status(400).json({
+          ok: false,
+          error_message: "País no válido",
+        });
+      }
+
+      const solicitud = await SolicitudModel.create({
+        nombre,
+        correo,
+        telefono,
+        finalidad,
+        pais,
+        estado: "pendiente",
+      });
+
+      return res.status(201).json({ ok: true, solicitud });
+    } catch (error) {
+      console.error("Error creating solicitud pública:", error);
+      return res.status(500).json({
+        ok: false,
+        error_message: "Error al crear solicitud",
+      });
+    }
+  }
 }
