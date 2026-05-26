@@ -211,4 +211,27 @@ export class TestimonioController implements TestimonioService {
       });
     }
   }
+  async getPublicByPais(req: Request, res: Response): Promise<any> {
+    try {
+      const { pais } = req.params;
+
+      const paisesValidos = ["Chile", "Colombia", "Ecuador"];
+      if (!paisesValidos.includes(pais)) {
+        return res
+          .status(400)
+          .json({ ok: false, error_message: "País no válido" });
+      }
+
+      const testimonios = await TestimonioModel.find({
+        pais,
+        estado: "publicado",
+      }).sort({ fecha_creacion: -1 });
+
+      return res.status(200).json({ ok: true, testimonios });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ ok: false, error_message: "Error al obtener testimonios" });
+    }
+  }
 }

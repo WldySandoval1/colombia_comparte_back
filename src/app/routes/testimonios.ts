@@ -19,5 +19,5 @@ router.get("/stats/total-publicados-pais", verifyToken, (req, res) =>
 router.get("/stats/list/testimonio/pais", verifyToken, (req, res) =>
   controller.getTotalListTestimoniosPais(req, res),
 );
-
+router.get("/public/:pais", (req, res) => controller.getPublicByPais(req, res));
 export default router;
