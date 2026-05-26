@@ -237,7 +237,6 @@ export class NoticiaController implements NoticiaService {
       const noticias = await NoticiaModel.find({
         pais,
         estado: "publicado",
-        visible: true,
       }).sort({ fecha_creacion: -1 });
 
       return res.status(200).json({ ok: true, noticias });
